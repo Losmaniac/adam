@@ -795,6 +795,593 @@
     }
   };
 
-  global.VEHICLES = [traktor, bagr, buldozer, truck, kombajn, domichavac, rolba];
+  /* ===========================================================================
+   *  8) ČTYŘKOLKA
+   * =========================================================================*/
+  const ctyrkolka = {
+    id: 'ctyrkolka',
+    name: 'Čtyřkolka',
+    subtitle: 'Prohání se blátem',
+    emoji: '🛞',
+    scene: 'teren',
+    theme: { main: '#8bc93e', dark: '#5a9c1e', accent: '#1c2129', ink: '#2e4a12' },
+    sound: {
+      base: 56, saw: 0.30, square: 0.20, noise: 0.10, whine: 0.016, cutoff: [300, 1900], lfoDiv: 2.6,
+      horn: { type: 'square', gain: 0.34, notes: [[660, 0, 0.12], [660, 0.18, 0.12]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 6 },
+      dust: { type: 'dust', when: 'driving', rate: 20 },
+      mud: { type: 'mud', when: 'action', rate: 40 }
+    },
+    action: {
+      id: 'bahno', label: 'Bláto', icon: 'mud', duration: 2600, loop: true, sound: 'spray',
+      parts: { rack: [[0, 0], [0.14, -10], [0.5, -10], [0.64, 4], [1, 0]] },
+      emitAt: { mud: [0, 1] }
+    },
+    art(p) {
+      const M = '#8bc93e', D = '#5a9c1e', DD = '#3c6e12', K = '#1c2129';
+      let s = `<defs>${bodyGrad(p + 'b', '#a3e058', D)}</defs>`;
+      s += A.shadow({ x: 280, rx: 210, ry: 13 });
+
+      /* rám a podlaha */
+      s += `<rect x="185" y="206" width="190" height="20" rx="8" fill="${K}"/>`;
+
+      /* zadní nosič + madlo */
+      s += `<path d="M 122 176 L 122 150 Q 122 140 134 140 L 150 140 Q 160 140 160 150 L 160 176" fill="none" stroke="${K}" stroke-width="8" stroke-linecap="round"/>`;
+      s += `<rect x="118" y="176" width="80" height="14" rx="6" fill="${DD}"/>`;
+      s += `<rect x="126" y="164" width="64" height="10" rx="5" fill="${D}"/>`;
+
+      /* sedlo + řidič */
+      s += `<path d="M 210 200 L 210 172 Q 210 162 222 160 L 300 158 Q 314 158 316 170 L 318 200 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += A.driver({ x: 262, y: 156, s: 0.86, cap: '#1c2129', shirt: '#e63946' });
+
+      /* tělo kolem motoru */
+      s += `<path d="M 200 206 L 200 182 Q 200 172 212 172 L 340 172 Q 356 172 358 188 L 360 206 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<rect x="222" y="184" width="90" height="7" rx="3.5" fill="${DD}" fill-opacity="0.5"/>`;
+
+      /* výfuk */
+      s += `<rect x="150" y="206" width="60" height="14" rx="7" fill="url(#gSteel)"/>`;
+      s += A.emitter('exhaust', 152, 213);
+
+      /* přední nosič a blatník – pohyblivá část ("bláto") */
+      s += `<g data-part="rack" data-pivot="358 178">`;
+      s += `<path d="M 356 188 Q 356 152 392 150 Q 428 150 430 186" fill="${M}" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<rect x="352" y="150" width="70" height="14" rx="6" fill="${DD}"/>`;
+      s += `<rect x="362" y="138" width="50" height="10" rx="5" fill="${D}"/>`;
+      s += A.lamp({ x: 420, y: 168, r: 8, len: 220, spread: 50 });
+      s += `<path d="M 366 150 L 350 118 M 366 150 L 386 116" stroke="${K}" stroke-width="7" stroke-linecap="round" fill="none"/>`;
+      s += `<rect x="338" y="110" width="20" height="10" rx="5" fill="${K}"/>`;
+      s += `<rect x="378" y="108" width="20" height="10" rx="5" fill="${K}"/>`;
+      s += `</g>`;
+
+      /* kola */
+      s += A.wheel({ cx: 165, cy: 222, r: 52, style: 'agri', lugs: 14, spokes: 5, rimColor: '#e9edf3', rimR: 0.42, bolts: 6 });
+      s += A.wheel({ cx: 395, cy: 222, r: 48, style: 'agri', lugs: 14, spokes: 5, rimColor: '#e9edf3', rimR: 0.42, bolts: 6 });
+      s += A.emitter('dust', 165, 258);
+      s += A.emitter('mud', 165, 250);
+
+      /* světla */
+      s += A.tailLamp({ x: 122, y: 168, r: 6 });
+      s += A.reverseLamp({ x: 138, y: 168, r: 5.5 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  9) MOTORKA
+   * =========================================================================*/
+  const motorka = {
+    id: 'motorka',
+    name: 'Motorka',
+    subtitle: 'Umí i kolečko',
+    emoji: '🏍️',
+    scene: 'silnice',
+    theme: { main: '#3b4552', dark: '#20252e', accent: '#e63946', ink: '#0e1116' },
+    sound: {
+      base: 60, saw: 0.34, square: 0.10, noise: 0.08, whine: 0.020, cutoff: [280, 2000], lfoDiv: 2.0, lfoDepth: 0.22,
+      horn: { type: 'square', gain: 0.30, notes: [[740, 0, 0.12], [740, 0.16, 0.12]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 8 },
+      dust: { type: 'dust', when: 'driving', rate: 12 },
+      burst: { type: 'smoke', when: 'action', rate: 44 }
+    },
+    action: {
+      id: 'kolecko', label: 'Kolečko', icon: 'wheelie', duration: 2400, loop: true, sound: 'spray',
+      parts: { frontFork: [[0, 0], [0.16, -12], [0.6, -12], [0.8, 4], [1, 0]] },
+      emitAt: { burst: [0, 0.24] }
+    },
+    art(p) {
+      const M = '#3b4552', D = '#20252e', DD = '#0e1116', R = '#e63946';
+      let s = `<defs>${bodyGrad(p + 'b', '#4f5a68', D)}</defs>`;
+      s += A.shadow({ x: 290, rx: 220, ry: 13 });
+
+      /* rám (statický, pod vidlicí) */
+      s += `<path d="M 150 224 Q 200 200 250 205 L 300 190 Q 330 176 372 172" fill="none" stroke="${DD}" stroke-width="10" stroke-linecap="round"/>`;
+
+      /* motor */
+      s += `<rect x="228" y="192" width="66" height="42" rx="8" fill="url(#gSteel)" stroke="${DD}" stroke-width="2"/>`;
+      s += `<rect x="238" y="200" width="8" height="26" fill="${DD}" opacity="0.5"/>`;
+      s += `<rect x="252" y="200" width="8" height="26" fill="${DD}" opacity="0.5"/>`;
+      s += `<rect x="266" y="200" width="8" height="26" fill="${DD}" opacity="0.5"/>`;
+
+      /* výfuk */
+      s += `<path d="M 260 228 Q 200 240 176 234" fill="none" stroke="url(#gChromeH)" stroke-width="11" stroke-linecap="round"/>`;
+      s += A.emitter('exhaust', 176, 234);
+      s += A.emitter('burst', 150, 250);
+
+      /* nádrž */
+      s += `<path d="M 288 178 Q 285 150 305 145 L 355 142 Q 372 142 373 158 L 370 182 Q 330 190 288 178 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<path d="M 300 156 L 358 152" fill="none" stroke="${R}" stroke-width="5" stroke-linecap="round"/>`;
+
+      /* sedlo */
+      s += `<path d="M 210 194 Q 208 182 224 180 L 292 178 L 294 194 Q 250 202 210 194 Z" fill="${DD}"/>`;
+      s += A.driver({ x: 268, y: 152, s: 0.82, cap: '#e63946', shirt: '#20252e' });
+
+      /* zadní kolo */
+      s += A.wheel({ cx: 150, cy: 224, r: 46, style: 'road', lugs: 18, spokes: 6, rimColor: '#e9edf3', rimR: 0.42, bolts: 8 });
+      s += A.emitter('dust', 150, 258);
+
+      /* přední vidlice + kolo – pohyblivá skupina ("kolečko") */
+      s += `<g data-part="frontFork" data-pivot="372 172">`;
+      s += `<path d="M 372 172 L 430 224" fill="none" stroke="url(#gChromeH)" stroke-width="9" stroke-linecap="round"/>`;
+      s += `<path d="M 376 168 L 422 214" fill="none" stroke="#fff" stroke-opacity="0.25" stroke-width="3" stroke-linecap="round"/>`;
+      s += `<path d="M 412 200 Q 428 196 438 206" fill="none" stroke="${DD}" stroke-width="10" stroke-linecap="round"/>`;
+      s += A.wheel({ cx: 430, cy: 224, r: 44, style: 'road', lugs: 18, spokes: 6, rimColor: '#e9edf3', rimR: 0.42, bolts: 8 });
+      s += `<path d="M 358 158 L 340 128 M 358 158 L 380 130" stroke="${DD}" stroke-width="6" stroke-linecap="round" fill="none"/>`;
+      s += `<rect x="328" y="120" width="18" height="9" rx="4.5" fill="${DD}"/>`;
+      s += `<rect x="374" y="122" width="18" height="9" rx="4.5" fill="${DD}"/>`;
+      s += `<path d="M 392 126 L 408 118" stroke="#8b95a6" stroke-width="4" stroke-linecap="round"/>`;
+      s += `<rect x="404" y="110" width="10" height="14" rx="4" fill="#5a6373"/>`;
+      s += A.lamp({ x: 370, y: 176, r: 9, len: 230, spread: 50 });
+      s += `</g>`;
+
+      s += A.tailLamp({ x: 152, y: 200, r: 6 });
+      s += A.reverseLamp({ x: 168, y: 200, r: 5.5 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  10) MULTIVAN
+   * =========================================================================*/
+  const multivan = {
+    id: 'multivan',
+    name: 'Multivan',
+    subtitle: 'Sveze celou rodinu',
+    emoji: '🚐',
+    scene: 'mesto',
+    theme: { main: '#5b7fa6', dark: '#3a5675', accent: '#f4f7fb', ink: '#1e3247' },
+    sound: {
+      base: 40, saw: 0.30, square: 0.14, noise: 0.06, whine: 0.008, cutoff: [210, 1400],
+      horn: { type: 'square', gain: 0.34, notes: [[440, 0, 0.22], [349, 0.28, 0.26]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 7 },
+      dust: { type: 'dust', when: 'driving', rate: 8 }
+    },
+    action: {
+      id: 'dvere', label: 'Dveře', icon: 'door', duration: 3600, loop: true, sound: 'hydraulic',
+      parts: { slideDoor: [[0, 0], [0.18, 12], [0.82, 12], [1, 0]] }
+    },
+    art(p) {
+      const M = '#5b7fa6', D = '#3a5675', DD = '#25384b', W = '#f4f7fb';
+      let s = `<defs>${bodyGrad(p + 'b', '#7096bb', D)}</defs>`;
+      s += A.shadow({ x: 300, rx: 220, ry: 13 });
+
+      /* kola pod karoserií */
+      s += A.wheel({ cx: 430, cy: 224, r: 42, style: 'road', lugs: 16, spokes: 6, rimColor: '#e9edf3', rimR: 0.55, bolts: 8 });
+      s += A.wheel({ cx: 178, cy: 224, r: 42, style: 'road', lugs: 16, spokes: 6, rimColor: '#e9edf3', rimR: 0.55, bolts: 8 });
+      s += A.emitter('dust', 300, 258);
+      s += A.fender({ cx: 430, cy: 224, r: 52, color: D, w: 13, from: 196, to: 344 });
+      s += A.fender({ cx: 178, cy: 224, r: 52, color: D, w: 13, from: 200, to: 340 });
+
+      /* karoserie – boxatý tvar */
+      s += `<path d="M 124 224 L 124 130 Q 124 112 142 112 L 468 112 Q 490 112 494 134 L 500 200 Q 500 224 486 224 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<rect x="124" y="196" width="376" height="9" rx="4.5" fill="${DD}" fill-opacity="0.5"/>`;
+      s += `<rect x="130" y="118" width="360" height="7" rx="3.5" fill="#fff" fill-opacity="0.28"/>`;
+
+      /* čelní maska + světla */
+      s += A.grille({ x: 470, y: 158, w: 22, h: 34, bars: 5, rx: 6, frame: '#d8dee8', color: '#20252e' });
+      s += A.lamp({ x: 496, y: 160, r: 9, len: 240, spread: 54 });
+
+      /* čelní sklo */
+      s += A.glass(`M 440 118 L 470 118 L 486 152 L 448 152 Z`, { tint: '#a9dcf6' });
+
+      /* boční okno u řidiče */
+      s += A.glass(`M 300 120 L 430 120 L 430 152 L 300 152 Z`, { tint: '#a9dcf6' });
+
+      /* interiér za posuvnými dveřmi – vidět po otevření */
+      s += `<rect x="205" y="122" width="84" height="98" rx="4" fill="${DD}" opacity="0.5"/>`;
+      s += `<circle cx="232" cy="172" r="12" fill="#e0c9a0"/><rect x="222" y="182" width="20" height="24" rx="6" fill="#8b6a46"/>`;
+
+      /* posuvné dveře – pohyblivá skupina */
+      s += `<g data-part="slideDoor" data-pivot="291 220">`;
+      s += `<path d="M 205 220 L 205 122 Q 205 120 208 120 L 288 120 L 288 220 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += A.glass(`M 214 128 L 280 128 L 280 156 L 214 156 Z`, { tint: '#a9dcf6' });
+      s += `<rect x="214" y="176" width="66" height="7" rx="3.5" fill="${DD}"/>`;
+      s += `<rect x="240" y="164" width="14" height="7" rx="3.5" fill="${W}"/>`;
+      s += `</g>`;
+
+      s += A.driver({ x: 360, y: 148, s: 0.78, cap: '#274156', shirt: '#f4f7fb' });
+
+      /* výfuk */
+      s += A.stack({ x: 150, yTop: 210, yBottom: 226, w: 10, color: 'url(#gSteel)' });
+      s += A.emitter('exhaust', 148, 208);
+
+      /* zrcátko */
+      s += `<path d="M 494 148 L 512 142" stroke="#3b4c66" stroke-width="4" stroke-linecap="round"/>`;
+      s += `<rect x="506" y="132" width="12" height="20" rx="4" fill="#3b4c66"/>`;
+
+      s += A.tailLamp({ x: 130, y: 150, r: 6.5 });
+      s += A.reverseLamp({ x: 130, y: 168, r: 6 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  11) DACIA BIGSTER
+   * =========================================================================*/
+  const bigster = {
+    id: 'bigster',
+    name: 'Dacia Bigster',
+    subtitle: 'Vyrazí do terénu',
+    emoji: '🚙',
+    scene: 'teren',
+    theme: { main: '#7a8c5c', dark: '#57623f', accent: '#2b323d', ink: '#3a4326' },
+    sound: {
+      base: 46, saw: 0.34, square: 0.18, noise: 0.09, whine: 0.010, cutoff: [230, 1500],
+      horn: { type: 'square', gain: 0.36, notes: [[392, 0, 0.28], [392, 0.34, 0.3]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 8 },
+      dust: { type: 'dust', when: 'driving', rate: 16 },
+      mudF: { type: 'mud', when: 'action', rate: 26 },
+      mudR: { type: 'mud', when: 'action', rate: 26 }
+    },
+    action: {
+      id: 'teren', label: 'Terén', icon: 'mountain', duration: 3200, loop: true, sound: 'spray',
+      parts: { skid: [[0, 0], [0.16, -6], [0.5, -6], [0.66, 3], [1, 0]] },
+      emitAt: { mudF: [0, 1], mudR: [0, 1] }
+    },
+    art(p) {
+      const M = '#7a8c5c', D = '#57623f', DD = '#3a4326', K = '#2b323d';
+      let s = `<defs>${bodyGrad(p + 'b', '#93a675', D)}</defs>`;
+      s += A.shadow({ x: 300, rx: 224, ry: 14 });
+
+      s += A.wheel({ cx: 425, cy: 220, r: 46, style: 'road', lugs: 18, spokes: 6, rimColor: '#dfe5ee', rimR: 0.5, bolts: 8 });
+      s += A.wheel({ cx: 175, cy: 220, r: 46, style: 'road', lugs: 18, spokes: 6, rimColor: '#dfe5ee', rimR: 0.5, bolts: 8 });
+      s += A.emitter('dust', 300, 258);
+
+      /* černé plastové obložení dole */
+      s += `<path d="M 130 222 L 470 222 L 466 198 L 134 198 Z" fill="${K}"/>`;
+
+      /* karoserie */
+      s += `<path d="M 140 200 L 140 148 Q 140 138 150 134 L 220 118 Q 300 108 380 118 L 440 136 Q 460 142 462 158 L 466 200 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<rect x="140" y="180" width="326" height="8" rx="4" fill="${DD}" fill-opacity="0.45"/>`;
+
+      /* přední maska */
+      s += A.grille({ x: 442, y: 152, w: 20, h: 30, bars: 5, rx: 5, frame: '#c8cfda', color: '#20252e' });
+      s += A.lamp({ x: 464, y: 156, r: 8, len: 230, spread: 50 });
+
+      /* okna */
+      s += A.glass(`M 232 122 L 300 116 L 336 122 L 336 156 L 232 156 Z`, { tint: '#a9dcf6' });
+      s += A.glass(`M 344 122 L 424 138 L 440 158 L 344 158 Z`, { tint: '#a9dcf6' });
+      s += `<rect x="336" y="116" width="8" height="42" fill="${DD}"/>`;
+
+      s += A.driver({ x: 400, y: 138, s: 0.72, cap: '#3a4326', shirt: '#e8e2d0' });
+
+      /* střešní ližiny */
+      s += `<rect x="210" y="112" width="150" height="6" rx="3" fill="#8b95a6"/>`;
+      s += `<rect x="220" y="106" width="8" height="10" fill="#8b95a6"/><rect x="330" y="106" width="8" height="10" fill="#8b95a6"/>`;
+
+      /* podvozkový kryt – nepatrně se naklápí ("terén") */
+      s += `<g data-part="skid" data-pivot="450 200">`;
+      s += `<path d="M 420 202 L 470 202 L 462 218 L 424 218 Z" fill="#39414f" stroke="#20252e" stroke-width="2" stroke-linejoin="round"/>`;
+      s += `</g>`;
+
+      s += A.fender({ cx: 425, cy: 220, r: 56, color: K, w: 14, from: 198, to: 342 });
+      s += A.fender({ cx: 175, cy: 220, r: 56, color: K, w: 14, from: 202, to: 338 });
+
+      s += A.stack({ x: 154, yTop: 208, yBottom: 224, w: 11, color: 'url(#gSteel)' });
+      s += A.emitter('exhaust', 152, 206);
+      s += A.emitter('mudF', 425, 254);
+      s += A.emitter('mudR', 175, 254);
+
+      s += A.tailLamp({ x: 144, y: 150, r: 6.5 });
+      s += A.reverseLamp({ x: 144, y: 168, r: 6 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  12) ŠKODA SUPERB
+   * =========================================================================*/
+  const superb = {
+    id: 'superb',
+    name: 'Škoda Superb',
+    subtitle: 'Elegantní jízda',
+    emoji: '🚗',
+    scene: 'mesto',
+    theme: { main: '#274156', dark: '#182a38', accent: '#c8cfda', ink: '#0e1b26' },
+    sound: {
+      base: 38, saw: 0.26, square: 0.12, noise: 0.05, whine: 0.007, cutoff: [200, 1350],
+      horn: { type: 'triangle', gain: 0.30, notes: [[523, 0, 0.16], [659, 0.18, 0.22]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 6 },
+      dust: { type: 'dust', when: 'driving', rate: 6 }
+    },
+    action: {
+      id: 'kufr', label: 'Kufr', icon: 'trunk', duration: 3400, loop: true, sound: 'hydraulic',
+      parts: { trunkLid: [[0, 0], [0.18, -25], [0.82, -25], [1, 0]] }
+    },
+    art(p) {
+      const M = '#274156', D = '#182a38', DD = '#0e1b26', C = '#c8cfda';
+      let s = `<defs>${bodyGrad(p + 'b', '#375a75', D)}</defs>`;
+      s += A.shadow({ x: 300, rx: 226, ry: 13 });
+
+      s += A.wheel({ cx: 430, cy: 222, r: 40, style: 'road', lugs: 20, spokes: 8, rimColor: '#e9edf3', rimR: 0.56, bolts: 10 });
+      s += A.wheel({ cx: 185, cy: 222, r: 40, style: 'road', lugs: 20, spokes: 8, rimColor: '#e9edf3', rimR: 0.56, bolts: 10 });
+      s += A.emitter('dust', 300, 258);
+      s += A.fender({ cx: 430, cy: 222, r: 48, color: D, w: 11, from: 200, to: 340 });
+      s += A.fender({ cx: 185, cy: 222, r: 48, color: D, w: 11, from: 202, to: 338 });
+
+      /* zadní blatník (statický) */
+      s += `<path d="M 148 224 L 148 178 Q 150 170 160 168 L 226 166 L 226 224 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      /* zavazadlo uvnitř kufru – vidět po otevření */
+      s += `<rect x="160" y="196" width="46" height="22" rx="4" fill="#8b5e34"/>`;
+      s += `<rect x="166" y="190" width="26" height="10" rx="3" fill="#a97a45"/>`;
+
+      /* spodek karoserie */
+      s += `<path d="M 148 224 L 148 176 Q 150 168 160 166 L 460 152 Q 478 152 480 170 L 486 200 Q 486 224 470 224 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<path d="M 150 196 L 484 184" stroke="${C}" stroke-width="2.5" opacity="0.55"/>`;
+
+      /* kabina / střecha */
+      s += `<path d="M 226 166 Q 250 122 300 116 Q 360 112 404 128 L 430 152 L 226 166 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += A.glass(`M 250 128 Q 288 120 320 122 L 322 152 L 244 158 Z`, { tint: '#a9dcf6' });
+      s += A.glass(`M 330 124 L 400 134 L 420 152 L 332 152 Z`, { tint: '#a9dcf6' });
+      s += `<rect x="322" y="118" width="8" height="38" fill="${DD}"/>`;
+      s += A.driver({ x: 366, y: 138, s: 0.68, cap: '#0e1b26', shirt: '#e8e2d0' });
+
+      /* přední maska – vysoká chromová mřížka */
+      s += A.grille({ x: 462, y: 168, w: 24, h: 40, bars: 6, rx: 8, frame: 'url(#gChromeH)', color: '#12181f' });
+      s += A.lamp({ x: 486, y: 178, r: 8, len: 220, spread: 48 });
+
+      /* víko kufru – pohyblivé */
+      s += `<g data-part="trunkLid" data-pivot="160 176">`;
+      s += `<path d="M 156 176 L 210 172 Q 216 172 216 178 L 216 190 L 156 194 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.2" stroke-linejoin="round"/>`;
+      s += `<rect x="170" y="180" width="34" height="5" rx="2.5" fill="${C}" opacity="0.6"/>`;
+      s += `</g>`;
+
+      s += A.stack({ x: 460, yTop: 214, yBottom: 224, w: 10, color: 'url(#gSteel)' });
+      s += A.emitter('exhaust', 462, 216);
+
+      s += A.tailLamp({ x: 152, y: 200, r: 6.5 });
+      s += A.reverseLamp({ x: 152, y: 214, r: 6 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  13) NISSAN LEAF
+   * =========================================================================*/
+  const leaf = {
+    id: 'leaf',
+    name: 'Nissan Leaf',
+    subtitle: 'Tichá jízda na elektřinu',
+    emoji: '🍃',
+    scene: 'mesto',
+    theme: { main: '#2ec4b6', dark: '#1c8c81', accent: '#eafff9', ink: '#0d4a44' },
+    sound: {
+      base: 70, saw: 0.06, square: 0.05, noise: 0.03, whine: 0.045, cutoff: [500, 2600], lfoDiv: 6, lfoDepth: 0.05,
+      horn: { type: 'triangle', gain: 0.26, notes: [[880, 0, 0.14], [988, 0.16, 0.16]] }
+    },
+    emitters: {
+      dust: { type: 'dust', when: 'driving', rate: 4 },
+      electric: { type: 'electric', when: 'action', rate: 30 }
+    },
+    action: {
+      id: 'nabijet', label: 'Nabíjet', icon: 'bolt', duration: 3200, loop: true, sound: 'charge',
+      parts: { chargeFlap: [[0, 0], [0.14, -70], [0.86, -70], [1, 0]] },
+      emitAt: { electric: [0.16, 0.84] }
+    },
+    art(p) {
+      const M = '#2ec4b6', D = '#1c8c81', DD = '#0d4a44', E = '#eafff9';
+      let s = `<defs>${bodyGrad(p + 'b', '#4fd8c8', D)}</defs>`;
+      s += A.shadow({ x: 300, rx: 214, ry: 13 });
+
+      s += A.wheel({ cx: 420, cy: 222, r: 40, style: 'road', lugs: 18, spokes: 7, rimColor: '#eafff9', rimR: 0.55, bolts: 8 });
+      s += A.wheel({ cx: 175, cy: 222, r: 40, style: 'road', lugs: 18, spokes: 7, rimColor: '#eafff9', rimR: 0.55, bolts: 8 });
+      s += A.emitter('dust', 300, 258);
+      s += A.fender({ cx: 420, cy: 222, r: 48, color: D, w: 11, from: 198, to: 342 });
+      s += A.fender({ cx: 175, cy: 222, r: 48, color: D, w: 11, from: 202, to: 338 });
+
+      /* zaoblená karoserie */
+      s += `<path d="M 140 222 L 140 176 Q 142 156 164 150 Q 220 118 300 116 Q 380 116 424 148 Q 456 168 460 196 L 462 222 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<path d="M 150 198 L 456 198" stroke="${DD}" stroke-opacity="0.3" stroke-width="6" stroke-linecap="round"/>`;
+
+      /* okna */
+      s += A.glass(`M 176 152 Q 224 124 296 122 L 296 158 L 176 158 Z`, { tint: '#a9dcf6' });
+      s += A.glass(`M 304 122 Q 366 124 408 150 L 420 160 L 304 160 Z`, { tint: '#a9dcf6' });
+      s += `<rect x="296" y="120" width="8" height="40" fill="${DD}"/>`;
+      s += A.driver({ x: 250, y: 140, s: 0.70, cap: '#1c8c81', shirt: '#eafff9' });
+
+      /* listový odznak – hravá narážka na jméno "Leaf" */
+      s += `<path d="M 300 178 q 10 -10 20 0 q -10 10 -20 0 z" fill="${E}" opacity="0.85"/>`;
+      s += `<path d="M 300 178 q 8 -6 16 0" fill="none" stroke="${D}" stroke-width="1.6"/>`;
+
+      /* hladký přední panel – elektromobily nemají velkou mřížku */
+      s += `<rect x="440" y="168" width="20" height="30" rx="8" fill="${DD}" opacity="0.5"/>`;
+      s += A.lamp({ x: 458, y: 174, r: 8, len: 220, spread: 48 });
+
+      /* nabíjecí port (skrytý pod klapkou, dokud se neotevře) */
+      s += `<circle cx="452" cy="186" r="8" fill="#12181f"/>`;
+      s += `<circle cx="452" cy="186" r="4" fill="${M}"/>`;
+      s += A.emitter('electric', 452, 186);
+
+      /* nabíjecí klapka – pohyblivá */
+      s += `<g data-part="chargeFlap" data-pivot="440 187">`;
+      s += `<rect x="440" y="178" width="20" height="18" rx="4" fill="url(#${p}b)" stroke="${DD}" stroke-width="2"/>`;
+      s += `</g>`;
+
+      s += A.tailLamp({ x: 146, y: 174, r: 6.5 });
+      s += A.reverseLamp({ x: 146, y: 192, r: 6 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  14) VELOREX
+   * =========================================================================*/
+  const velorex = {
+    id: 'velorex',
+    name: 'Velorex',
+    subtitle: 'Kouzelný tříkolák',
+    emoji: '🛺',
+    scene: 'pole',
+    theme: { main: '#d98e3f', dark: '#a8631c', accent: '#3b2a1a', ink: '#5c3c14' },
+    sound: {
+      base: 50, saw: 0.40, square: 0.10, noise: 0.14, whine: 0.006, cutoff: [260, 1600], lfoDiv: 2.0, lfoDepth: 0.45,
+      horn: { type: 'square', gain: 0.30, notes: [[330, 0, 0.18]] }
+    },
+    emitters: {
+      exhaust: { type: 'smoke', when: 'engine', rate: 11 },
+      dust: { type: 'dust', when: 'driving', rate: 8 }
+    },
+    action: {
+      id: 'strecha', label: 'Stříška', icon: 'roof', duration: 3600, loop: true, sound: 'hydraulic',
+      parts: { roof: [[0, 0], [0.20, 18], [0.80, 18], [1, 0]] }
+    },
+    art(p) {
+      const M = '#d98e3f', D = '#a8631c', DD = '#7a4712', F = '#3b2a1a';
+      let s = `<defs>${bodyGrad(p + 'b', '#f0ac5f', D)}</defs>`;
+      s += A.shadow({ x: 270, rx: 168, ry: 12 });
+
+      /* vzdálenější zadní kolo – naznačuje třetí kolo tříkoláku */
+      s += A.wheel({ cx: 146, cy: 234, r: 26, style: 'road', lugs: 10, spokes: 5, rimColor: '#d8dee8', rimR: 0.5, bolts: 5 });
+
+      /* trubkový rám */
+      s += `<path d="M 172 228 Q 220 250 300 246 Q 360 244 390 228" fill="none" stroke="${F}" stroke-width="7" stroke-linecap="round"/>`;
+      s += `<path d="M 176 210 L 384 214" fill="none" stroke="${F}" stroke-width="6" stroke-linecap="round"/>`;
+
+      /* motůrek vzadu */
+      s += `<rect x="150" y="196" width="34" height="26" rx="5" fill="#5a6373" stroke="#39414f" stroke-width="2"/>`;
+      s += `<rect x="156" y="188" width="10" height="10" fill="#8b95a6"/><rect x="170" y="188" width="10" height="10" fill="#8b95a6"/>`;
+      s += A.stack({ x: 152, yTop: 178, yBottom: 198, w: 9, color: 'url(#gSteel)' });
+      s += A.emitter('exhaust', 152, 172);
+
+      /* plátěná kabina */
+      s += `<path d="M 196 224 L 196 168 Q 196 152 214 148 L 330 144 Q 350 144 356 160 L 362 210 L 362 224 Z" fill="url(#${p}b)" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      /* švy na plátně */
+      s += `<path d="M 214 150 L 350 160" fill="none" stroke="${DD}" stroke-width="2" stroke-dasharray="6 5" opacity="0.6"/>`;
+      s += `<path d="M 260 148 L 258 222 M 300 146 L 300 222" stroke="${DD}" stroke-width="2" stroke-dasharray="6 5" opacity="0.45"/>`;
+
+      /* čelní sklo + řidič */
+      s += A.glass(`M 330 150 L 354 162 L 354 196 L 330 196 Z`, { tint: '#a9dcf6' });
+      s += A.driver({ x: 280, y: 172, s: 0.72, cap: '#5c3c14', shirt: '#e8c9a0' });
+
+      /* stříška – sklápěcí */
+      s += `<g data-part="roof" data-pivot="214 148">`;
+      s += `<path d="M 214 148 Q 260 120 330 128 Q 350 132 356 150 L 330 150 Q 268 140 216 156 Z" fill="${D}" stroke="${DD}" stroke-width="2.5" stroke-linejoin="round"/>`;
+      s += `<path d="M 226 140 L 320 136" stroke="#fff" stroke-opacity="0.25" stroke-width="4" stroke-linecap="round"/>`;
+      s += `</g>`;
+
+      /* maličký reflektor */
+      s += A.lamp({ x: 392, y: 208, r: 7, len: 200, spread: 44 });
+
+      /* kola – přední a bližší zadní */
+      s += A.wheel({ cx: 390, cy: 228, r: 34, style: 'road', lugs: 12, spokes: 5, rimColor: '#d8dee8', rimR: 0.5, bolts: 6 });
+      s += A.wheel({ cx: 172, cy: 228, r: 36, style: 'road', lugs: 12, spokes: 5, rimColor: '#d8dee8', rimR: 0.5, bolts: 6 });
+      s += A.emitter('dust', 280, 258);
+
+      s += A.tailLamp({ x: 152, y: 206, r: 5.5 });
+
+      return s;
+    }
+  };
+
+  /* ===========================================================================
+   *  15) KOLO
+   * =========================================================================*/
+  const kolo = {
+    id: 'kolo',
+    name: 'Kolo',
+    subtitle: 'Zvoní a dělá triky',
+    emoji: '🚲',
+    scene: 'park',
+    theme: { main: '#ff6f59', dark: '#c94a37', accent: '#ffffff', ink: '#7a2e1f' },
+    sound: {
+      silent: true,
+      horn: { type: 'triangle', gain: 0.32, notes: [[1568, 0, 0.09], [1976, 0.10, 0.09], [1568, 0.20, 0.09]] }
+    },
+    spin: { pedals: 480 },
+    emitters: {
+      dust: { type: 'dust', when: 'driving', rate: 6 },
+      star: { type: 'star', when: 'action', rate: 26 }
+    },
+    action: {
+      id: 'trik', label: 'Trik', icon: 'sparkle', duration: 2200, loop: true, sound: 'spray',
+      parts: { frontPop: [[0, 0], [0.16, -13], [0.6, -13], [0.8, 4], [1, 0]] },
+      emitAt: { star: [0.1, 0.3] }
+    },
+    art(p) {
+      const D = '#c94a37', DD = '#7a2e1f';
+      let s = `<defs>${bodyGrad(p + 'b', '#ff8f7c', D)}</defs>`;
+      s += A.shadow({ x: 290, rx: 190, ry: 12 });
+
+      /* zadní kolo */
+      s += A.wheel({ cx: 180, cy: 224, r: 54, style: 'smooth', spokes: 12, rimColor: '#fff2ee', rimR: 0.72, bolts: 8, hub: '#39414f' });
+
+      /* rám (diamant) */
+      s += `<path d="M 180 224 L 290 224 L 340 130 M 290 224 L 250 150 L 340 130 L 380 172 M 250 150 L 190 150" fill="none" stroke="url(#${p}b)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>`;
+      s += `<path d="M 184 220 L 286 220" stroke="#fff" stroke-opacity="0.3" stroke-width="3" stroke-linecap="round"/>`;
+
+      /* sedlo */
+      s += `<path d="M 236 148 Q 250 142 264 148 L 262 156 L 238 156 Z" fill="${DD}"/>`;
+      s += `<rect x="248" y="150" width="6" height="4" fill="#8b95a6"/>`;
+      s += A.driver({ x: 262, y: 176, s: 0.72, cap: '#ff6f59', shirt: '#ffffff' });
+
+      /* košík vpředu s kytičkami */
+      s += `<path d="M 358 168 L 396 168 L 392 190 L 362 190 Z" fill="none" stroke="#8b6a46" stroke-width="3.5" stroke-linejoin="round"/>`;
+      s += `<path d="M 362 172 L 392 172 M 364 180 L 390 180" stroke="#8b6a46" stroke-width="2"/>`;
+      s += `<circle cx="370" cy="164" r="5" fill="#e2452f"/><circle cx="380" cy="162" r="5" fill="#ffd21e"/><circle cx="388" cy="166" r="5" fill="#f487c4"/>`;
+
+      /* pedály – točí se */
+      s += `<g data-spin="pedals" data-pivot="290 224">`;
+      s += `<circle cx="290" cy="224" r="24" fill="none" stroke="${DD}" stroke-width="5"/>`;
+      s += `<line x1="290" y1="224" x2="314" y2="224" stroke="#39414f" stroke-width="6" stroke-linecap="round"/>`;
+      s += `<line x1="290" y1="224" x2="266" y2="224" stroke="#39414f" stroke-width="6" stroke-linecap="round"/>`;
+      s += `<rect x="308" y="219" width="14" height="10" rx="3" fill="#20252e"/>`;
+      s += `<rect x="258" y="219" width="14" height="10" rx="3" fill="#20252e"/>`;
+      s += `</g>`;
+      s += `<circle cx="290" cy="224" r="10" fill="#8b95a6"/>`;
+
+      /* přední vidlice + kolo – pohyblivé (trik) */
+      s += `<g data-part="frontPop" data-pivot="340 130">`;
+      s += `<path d="M 340 130 L 400 224" fill="none" stroke="url(#${p}b)" stroke-width="9" stroke-linecap="round"/>`;
+      s += `<path d="M 328 128 L 352 132" stroke="${DD}" stroke-width="7" stroke-linecap="round"/>`;
+      s += A.wheel({ cx: 400, cy: 224, r: 54, style: 'smooth', spokes: 12, rimColor: '#fff2ee', rimR: 0.72, bolts: 8, hub: '#39414f' });
+      s += A.lamp({ x: 340, y: 126, r: 6, len: 160, spread: 34 });
+      s += `</g>`;
+
+      s += A.emitter('dust', 290, 258);
+      s += A.emitter('star', 340, 150);
+
+      return s;
+    }
+  };
+
+  global.VEHICLES = [
+    traktor, bagr, buldozer, truck, kombajn, domichavac, rolba,
+    ctyrkolka, motorka, multivan, bigster, superb, leaf, velorex, kolo
+  ];
   global.VEHICLE_BY_ID = global.VEHICLES.reduce((m, v) => (m[v.id] = v, m), {});
 })(typeof window !== 'undefined' ? window : globalThis);

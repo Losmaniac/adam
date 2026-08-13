@@ -19,9 +19,18 @@ soubory** — stačí otevřít `index.html` v prohlížeči. Funguje i bez inte
 | 🌾 **Kombajn** | zlaté pole | **sklízí** — točí se motovidlo, sype se zrní a vzadu létá sláma |
 | 🛻 **Domíchávač** | stavba | **lije beton** — buben se točí, skluz se sklopí |
 | ⛸️ **Rolba** | zimní stadion | **hladí led** — stříká voda, odlétá sníh a led se leskne |
+| 🛞 **Čtyřkolka** | terén | prohání se **blátem** — stříká z obou zadních kol |
+| 🏍️ **Motorka** | silnice | umí **kolečko** — přední kolo se zvedne, výfuk bafne |
+| 🚐 **Multivan** | město | otevře **posuvné dveře** a odhalí interiér |
+| 🚙 **Dacia Bigster** | terén | vyrazí do **terénu** — stříká bláto od všech kol |
+| 🚗 **Škoda Superb** | město | otevře **kufr** a ukáže zavazadlo |
+| 🍃 **Nissan Leaf** | město | **nabíjí se** — klapka se otevře, jiskří elektřina |
+| 🛺 **Velorex** | pole | sklopí plátěnou **stříšku** — tři kola, dvoutaktní put-put |
+| 🚲 **Kolo** | park | **trik** s předním kolem, zvonek místo houkačky, žádný motor |
 
-Každý stroj má vlastní zvuk motoru i houkačky, blatníky, majáček, řidiče v kabině
-a kola, která se točí přesně podle ujeté vzdálenosti.
+Každý stroj má vlastní zvuk motoru i houkačky, blatníky, majáček nebo směrovky,
+řidiče v kabině a kola, která se točí přesně podle ujeté vzdálenosti. Kolo motor
+nemá vůbec — místo hukotu cvaká volnoběžka a troubení nahrazuje zvonek.
 
 ## Ovládání
 
@@ -71,10 +80,13 @@ Na tabletu se hodí tlačítko **celé obrazovky** vpravo nahoře; díky
 index.html               kostra obrazovek
 css/styles.css           vzhled, velká tlačítka, rozložení
 js/art.js                SVG „dílna" – kola, pásy, světla, sklo, řidič, majáček
-js/vehicles.js           sedm strojů: kresba, zvuk, pohyblivé díly, částice
-js/scenes.js             kulisy (pole, obilí, stavba, silnice, zimní stadion)
-js/particles.js          kouř, prach, hlína, zrní, sníh, voda, beton, konfety
-js/audio.js              Web Audio – motor, houkačky, hydraulika, pípák, řeč
+js/vehicles.js           patnáct strojů: kresba, zvuk, pohyblivé díly, částice
+js/scenes.js             kulisy (pole, obilí, stavba, silnice, zimní stadion,
+                         terén, město, park)
+js/particles.js          kouř, prach, hlína, bahno, zrní, sníh, voda, beton,
+                         elektrické jiskry, konfety, hvězdičky
+js/audio.js              Web Audio – motor, houkačky, hydraulika, pípák, řeč,
+                         volnoběžka kola, nabíjecí tón elektromobilu
 js/app.js                stav hry, ovládání a hlavní smyčka
 assets/icon.svg          ikona aplikace
 ```

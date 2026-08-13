@@ -54,6 +54,56 @@
       <path d="M -4 ${-h - 4} l 10 -4 M -4 ${-h - 10} l 10 -4 M -4 ${-h - 16} l 10 -4" stroke="${c}" stroke-width="2" stroke-linecap="round"/>
      </g>`;
 
+  /* ---------- další opakovaně použité kousky (pro nové scény) ----------- */
+
+  const pine = (x, base, s, c1, c2) =>
+    `<g transform="translate(${x} ${base}) scale(${s})">
+      <rect x="-4" y="-14" width="8" height="16" fill="#6b4a2e"/>
+      <path d="M 0 -108 L 30 -58 L -30 -58 Z" fill="${c1}"/>
+      <path d="M 0 -84 L 27 -40 L -27 -40 Z" fill="${c2}"/>
+      <path d="M 0 -56 L 24 -14 L -24 -14 Z" fill="${c1}"/>
+     </g>`;
+
+  const rock = (x, base, s, c1, c2) =>
+    `<g transform="translate(${x} ${base}) scale(${s})">
+      <path d="M -30 0 Q -34 -26 -8 -30 Q 20 -40 32 -18 Q 40 0 30 0 Z" fill="${c1}"/>
+      <path d="M -18 0 Q -14 -18 4 -20 Q 8 -8 4 0 Z" fill="${c2}"/>
+     </g>`;
+
+  const building = (x, base, w, h, c, wc) =>
+    `<g transform="translate(${x} ${base})">
+      <rect x="0" y="${-h}" width="${w}" height="${h}" fill="${c}"/>
+      ${(() => { let o = ''; const rows = Math.max(1, Math.floor((h - 16) / 26)); const cols = Math.max(1, Math.floor((w - 14) / 22));
+        for (let r = 0; r < rows; r++) for (let c2 = 0; c2 < cols; c2++)
+          o += `<rect x="${8 + c2 * 22}" y="${-h + 14 + r * 26}" width="13" height="15" rx="2" fill="${wc}" opacity="${0.5 + ((r + c2) % 3) * 0.18}"/>`;
+        return o; })()}
+     </g>`;
+
+  const lamppost = (x, base, s, c) =>
+    `<g transform="translate(${x} ${base}) scale(${s})">
+      <rect x="-3" y="-88" width="6" height="88" rx="3" fill="${c}"/>
+      <path d="M -3 -88 Q -22 -88 -22 -100" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round"/>
+      <ellipse cx="-22" cy="-102" rx="9" ry="7" fill="#fff3b0"/>
+      <ellipse cx="-22" cy="-102" rx="18" ry="14" fill="#ffe680" opacity="0.25"/>
+     </g>`;
+
+  const bench = (x, base, s, c) =>
+    `<g transform="translate(${x} ${base}) scale(${s})">
+      <rect x="-26" y="-30" width="52" height="7" rx="3" fill="${c}"/>
+      <rect x="-26" y="-14" width="52" height="7" rx="3" fill="${c}"/>
+      <rect x="-22" y="-8" width="6" height="10" fill="#5a6373"/>
+      <rect x="16" y="-8" width="6" height="10" fill="#5a6373"/>
+      <rect x="-22" y="-44" width="6" height="16" fill="#5a6373"/>
+      <rect x="16" y="-44" width="6" height="16" fill="#5a6373"/>
+      <rect x="-26" y="-38" width="52" height="6" rx="3" fill="${c}"/>
+     </g>`;
+
+  const flowerbed = (x, base, w, colors) =>
+    `<g transform="translate(${x} ${base})">
+      <ellipse cx="${w / 2}" cy="0" rx="${w / 2}" ry="10" fill="#4a9a52"/>
+      ${[0, 1, 2, 3, 4, 5, 6].map(i => `<circle cx="${8 + i * (w - 16) / 6}" cy="${-2 + (i % 2) * 4}" r="4.5" fill="${colors[i % colors.length]}"/>`).join('')}
+     </g>`;
+
   /* ======================================================================
    *  POLE  (traktor)
    * ==================================================================== */
@@ -349,12 +399,153 @@
     ]
   };
 
+  /* ======================================================================
+   *  TERÉN  (čtyřkolka, Dacia Bigster)
+   * ==================================================================== */
+  const sceneTeren = {
+    id: 'teren',
+    sky: 'linear-gradient(180deg,#3d9fdb 0%,#83cdec 55%,#cdeccf 100%)',
+    sun: { color: '#fff3ac', x: '80%', y: '16%' },
+    groundH: 0.27, standH: 0.25,
+    layers: [
+      { h: 0.30, bottom: 0.56, speed: 0.05, tile: clouds },
+      {
+        h: 0.34, bottom: 0.24, speed: 0.14, tile: svgTile(760, 260,
+          pine(70, 258, 0.95, '#2f7a45', '#3d9155') + pine(220, 258, 0.7, '#2a6d3e', '#38854c') +
+          pine(400, 258, 1.1, '#2f7a45', '#3d9155') + pine(560, 258, 0.8, '#2a6d3e', '#38854c') +
+          pine(680, 258, 0.6, '#2f7a45', '#3d9155') +
+          `<path d="M 0 260 L 0 200 Q 200 172 400 202 Q 580 226 760 190 L 760 260 Z" fill="#5c9a5e"/>`)
+      },
+      {
+        h: 0.22, bottom: 0.235, speed: 0.44, tile: svgTile(520, 170,
+          rock(90, 168, 1.0, '#8a8478', '#a49d8d') + rock(360, 168, 0.8, '#847e70', '#9a9384') +
+          bush(200, 166, 0.9, '#3f8a4a') + bush(440, 168, 0.7, '#478f52'))
+      },
+      {
+        h: 0.13, bottom: 0.225, speed: 0.74, tile: svgTile(280, 110,
+          `<path d="M 6 110 L 20 40 Q 30 30 40 40 L 54 110 Z" fill="#6b4a2e" opacity="0.85"/>
+           <path d="M 6 110 L 20 40 L 12 110 Z" fill="#543a22" opacity="0.6"/>
+           <path d="M 150 110 q 30 -14 60 0" fill="none" stroke="#5c9a5e" stroke-width="10" stroke-linecap="round"/>
+           <path d="M 210 108 q 10 -20 4 -36 M 226 108 q 14 -14 12 -32" fill="none" stroke="#f2c94c" stroke-width="4" stroke-linecap="round" opacity="0.9"/>`)
+      },
+      {
+        h: 0.27, bottom: 0, speed: 1, ground: true, tile: svgTile(220, 200,
+          `<rect width="220" height="200" fill="#7a5c3c"/>
+           <rect width="220" height="10" fill="#5c9a5e"/>
+           <path d="M 0 10 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0 q 14 -8 28 0" fill="none" stroke="#4a8a4e" stroke-width="5"/>
+           ${/* dvě koleje od kol */['46', '110'].map(cy =>
+            `<rect x="0" y="${cy}" width="220" height="22" rx="10" fill="#5c4128" opacity="0.7"/>
+             <rect x="0" y="${+cy + 4}" width="220" height="6" rx="3" fill="#3f2c1a" opacity="0.6"/>`).join('')}
+           ${[0, 1, 2, 3, 4, 5, 6].map(i =>
+            `<ellipse cx="${18 + i * 30}" cy="${150 + (i % 3) * 16}" rx="${8 + (i % 2) * 4}" ry="${5 + (i % 2) * 2}" fill="#5c4128" opacity="0.65"/>`).join('')}
+           ${[0, 1, 2].map(i => `<ellipse cx="${40 + i * 76}" cy="${168 + (i % 2) * 14}" rx="14" ry="6" fill="#3f6fa0" opacity="0.55"/>`).join('')}`)
+      }
+    ]
+  };
+
+  /* ======================================================================
+   *  MĚSTO  (Multivan, Škoda Superb, Nissan Leaf)
+   * ==================================================================== */
+  const sceneMesto = {
+    id: 'mesto',
+    sky: 'linear-gradient(180deg,#5fa8e0 0%,#a9d6f0 58%,#eaf5fa 100%)',
+    sun: { color: '#fff6c8', x: '82%', y: '14%' },
+    groundH: 0.25, standH: 0.235,
+    layers: [
+      { h: 0.26, bottom: 0.60, speed: 0.04, tile: clouds },
+      {
+        h: 0.40, bottom: 0.235, speed: 0.12, tile: svgTile(820, 320,
+          building(10, 320, 90, 190, '#9db4cc', '#dbe8f2') + building(110, 320, 66, 140, '#b3c4d6', '#e4edf4') +
+          building(186, 320, 100, 230, '#8fa6bd', '#d7e5f0') + building(298, 320, 74, 160, '#a7bcd0', '#e0ebf3') +
+          building(384, 320, 92, 200, '#96acc4', '#d9e7f1') + building(490, 320, 70, 150, '#b0c2d4', '#e3edf4') +
+          building(572, 320, 104, 240, '#8fa6bd', '#d7e5f0') + building(690, 320, 80, 170, '#a7bcd0', '#e0ebf3'))
+      },
+      {
+        h: 0.20, bottom: 0.232, speed: 0.42, tile: svgTile(620, 160,
+          `<rect x="0" y="80" width="620" height="80" fill="#f4ede0"/>
+           <rect x="0" y="76" width="620" height="8" fill="#e2452f"/>
+           ${[[20, '#e2452f'], [170, '#2f6fd0'], [320, '#ffb52e'], [470, '#4a9a52']].map(([x, c]) =>
+            `<rect x="${x}" y="20" width="120" height="60" rx="4" fill="#ffffff" stroke="#d8dee8" stroke-width="2"/>
+             <path d="M ${x - 4} 20 q 4 -18 14 -18 l 92 0 q 10 0 14 18 z" fill="${c}"/>
+             <path d="M ${x - 4} 20 l 130 0 l -6 12 l -118 0 z" fill="${c}" opacity="0.7"/>
+             <rect x="${x + 14}" y="34" width="92" height="36" fill="#bcdff0" opacity="0.8"/>`).join('')}
+           ${tree(70, 160, 0.55, '#3f9a4a', '#4faa58')}${tree(430, 160, 0.6, '#398f45', '#48a352')}`)
+      },
+      {
+        h: 0.115, bottom: 0.228, speed: 0.7, tile: svgTile(320, 92,
+          lamppost(50, 92, 0.62, '#3b4c66') + lamppost(230, 92, 0.62, '#3b4c66') +
+          `<rect x="130" y="60" width="10" height="32" rx="3" fill="#8b95a6"/>
+           <rect x="118" y="34" width="34" height="28" rx="5" fill="#f4f7fb" stroke="#c8cfda" stroke-width="2"/>
+           <circle cx="135" cy="46" r="9" fill="#2f6fd0" opacity="0.85"/>
+           <path d="M 129 46 l 4 4 l 8 -9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>`)
+      },
+      {
+        h: 0.25, bottom: 0, speed: 1, ground: true, tile: svgTile(240, 200,
+          `<rect width="240" height="200" fill="#565f6c"/>
+           <rect width="240" height="7" fill="#e2e7ee"/>
+           <rect y="7" width="240" height="5" fill="#454d5a"/>
+           ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(i =>
+            `<circle cx="${8 + i * 22}" cy="${26 + (i * 41) % 160}" r="${2 + (i % 3)}" fill="#4a5260"/>`).join('')}
+           <rect x="10" y="80" width="220" height="14" rx="4" fill="#e2e7ee"/>
+           ${[0, 1, 2, 3, 4, 5, 6, 7].map(i => `<rect x="${16 + i * 28}" y="82" width="14" height="10" fill="#565f6c"/>`).join('')}
+           <rect x="70" y="140" width="100" height="10" rx="5" fill="#f4f7fb" opacity="0.85"/>
+           <rect y="192" width="240" height="8" fill="#454d5a"/>`)
+      }
+    ]
+  };
+
+  /* ======================================================================
+   *  PARK  (kolo)
+   * ==================================================================== */
+  const scenePark = {
+    id: 'park',
+    sky: 'linear-gradient(180deg,#48b0e6 0%,#93d9f2 55%,#e4f8e0 100%)',
+    sun: { color: '#fff6b0', x: '18%', y: '14%' },
+    groundH: 0.25, standH: 0.238,
+    layers: [
+      { h: 0.28, bottom: 0.58, speed: 0.05, tile: clouds },
+      {
+        h: 0.28, bottom: 0.236, speed: 0.15, tile: svgTile(700, 220,
+          tree(60, 216, 0.85, '#3f9a4a', '#55b25e') + tree(230, 218, 0.62, '#398f45', '#48a352') +
+          tree(400, 216, 1.0, '#3f9a4a', '#55b25e') + tree(560, 218, 0.7, '#398f45', '#57a95f') +
+          tree(660, 216, 0.55, '#3f9a4a', '#4faa58') +
+          `<path d="M 0 220 L 0 172 Q 180 148 360 176 Q 540 202 700 168 L 700 220 Z" fill="#6cc06e"/>`)
+      },
+      {
+        h: 0.16, bottom: 0.232, speed: 0.4, tile: svgTile(420, 128,
+          bench(80, 126, 0.92, '#c9863f') + bench(300, 126, 0.92, '#c9863f') +
+          flowerbed(150, 128, 90, ['#e2452f', '#ffd21e', '#f487c4', '#ffffff']))
+      },
+      {
+        h: 0.10, bottom: 0.228, speed: 0.68, tile: svgTile(260, 78,
+          lamppost(40, 78, 0.55, '#3f8a4a') + lamppost(190, 78, 0.55, '#3f8a4a') +
+          `<ellipse cx="120" cy="72" rx="26" ry="9" fill="#4a9a52"/><ellipse cx="120" cy="70" rx="18" ry="5" fill="#5cb063"/>`)
+      },
+      {
+        h: 0.25, bottom: 0, speed: 1, ground: true, tile: svgTile(220, 200,
+          `<rect width="220" height="200" fill="#6cc06e"/>
+           <rect x="30" y="0" width="160" height="200" fill="#d9c9a3"/>
+           <rect x="30" y="0" width="7" height="200" fill="#c2af80"/>
+           <rect x="183" y="0" width="7" height="200" fill="#c2af80"/>
+           ${[0, 1, 2, 3, 4, 5, 6].map(i =>
+            `<rect x="34" y="${i * 30}" width="152" height="4" fill="#c2af80" opacity="0.55"/>`).join('')}
+           ${[0, 1, 2, 3, 4].map(i =>
+            `<circle cx="${8 + i * 42}" cy="${40 + (i % 3) * 55}" r="5" fill="#5cb063"/>`).join('')}
+           ${[0, 1, 2, 3, 4].map(i =>
+            `<circle cx="${200 + (i % 2) * 12}" cy="${30 + i * 38}" r="5" fill="#5cb063"/>`).join('')}`)
+      }
+    ]
+  };
+
   const SCENES = {
     pole: scenePole,
     obili: sceneObili,
     stavba: sceneStavba,
     silnice: sceneSilnice,
-    led: sceneLed
+    led: sceneLed,
+    teren: sceneTeren,
+    mesto: sceneMesto,
+    park: scenePark
   };
 
   /* Předpočítáme data-URI, ať se to nedělá při každém překreslení. */

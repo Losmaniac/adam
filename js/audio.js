@@ -132,10 +132,12 @@
     nSrc.connect(nBp); nBp.connect(gN); gN.connect(filter);
 
     /* naftové "tuk-tuk-tuk" – pomalá modulace hlasitosti */
+    const lfoDiv = P.lfoDiv || 3.4;
+    const lfoDepth = P.lfoDepth === undefined ? 0.30 : P.lfoDepth;
     const lfo = ctx.createOscillator();
     lfo.type = 'sine';
-    lfo.frequency.value = P.base / 3.4;
-    const lfoG = ctx.createGain(); lfoG.gain.value = 0.30;
+    lfo.frequency.value = P.base / lfoDiv;
+    const lfoG = ctx.createGain(); lfoG.gain.value = lfoDepth;
     lfo.connect(lfoG); lfoG.connect(out.gain);
 
     [oscA, oscB, oscW, lfo, nSrc].forEach((n) => n.start());
@@ -159,7 +161,7 @@
     e.gN.gain.setTargetAtTime(P.noise * (0.7 + k * 1.5), t, 0.2);
     e.nBp.frequency.setTargetAtTime(360 + k * 900, t, 0.2);
     e.filter.frequency.setTargetAtTime(P.cutoff[0] + (P.cutoff[1] - P.cutoff[0]) * k, t, 0.16);
-    e.lfo.frequency.setTargetAtTime((P.base / 3.4) * (1 + k * 1.1), t, 0.16);
+    e.lfo.frequency.setTargetAtTime((P.base / (P.lfoDiv || 3.4)) * (1 + k * 1.1), t, 0.16);
     e.out.gain.setTargetAtTime(0.30 + k * 0.30, t, 0.18);
   };
 
@@ -219,6 +221,26 @@
     setTimeout(() => { try { bus.disconnect(); lp.disconnect(); } catch (_) {} }, 3000);
   };
 
+  /* ---------------------------------------------------- VOLNOBĚŽKA (KOLO) */
+
+  /** krátké mechanické "cvak" – řetěz/volnoběžka jízdního kola */
+  Sound.prototype.freewheelTick = function (vol) {
+    const ctx = this.init();
+    if (!ctx || !this.enabled) return;
+    const now = ctx.currentTime;
+    const src = this._noiseSource();
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = 2400 + Math.random() * 700;
+    bp.Q.value = 3.4;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(vol || 0.09, now + 0.004);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.032);
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    src.start(now); src.stop(now + 0.05);
+  };
+
   /* --------------------------------------------------------- COUVACÍ PÍPÁK */
 
   Sound.prototype.beep = function (freq, dur, gain) {
@@ -261,6 +283,25 @@
       this.horn(hornProfile);
       const self = this;
       this._showTimer = setTimeout(function () { self.horn(hornProfile); }, 1500);
+      return;
+    }
+
+    if (kind === 'charge') {            /* elektrické nabíjení – pulzující tón */
+      const cOut = ctx.createGain();
+      cOut.gain.value = 0.0001;
+      cOut.connect(this.master);
+      const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 740;
+      const g1 = ctx.createGain(); g1.gain.value = 0.5;
+      o1.connect(g1); g1.connect(cOut);
+      const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = 1108;
+      const g2 = ctx.createGain(); g2.gain.value = 0.22;
+      o2.connect(g2); g2.connect(cOut);
+      const cLfo = ctx.createOscillator(); cLfo.type = 'sine'; cLfo.frequency.value = 2.6;
+      const cLfoG = ctx.createGain(); cLfoG.gain.value = 0.09;
+      cLfo.connect(cLfoG); cLfoG.connect(cOut.gain);
+      [o1, o2, cLfo].forEach((n) => n.start());
+      cOut.gain.setTargetAtTime(0.10, ctx.currentTime, 0.3);
+      this.actionNode = { out: cOut, nodes: [o1, o2, cLfo] };
       return;
     }
 

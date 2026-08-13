@@ -69,6 +69,21 @@
       shape: 'chunk', colors: ['#fff3b0', '#ffd21e', '#ffffff'],
       r: [1.6, 3.4], grow: [0, 0], life: [0.4, 0.8], land: true,
       vx: [-120, 120], vy: [-160, -20], g: 380, drag: 0.3, alpha: 1, backDrift: 0
+    },
+    mud: {
+      shape: 'chunk', colors: ['#4a3420', '#5e4227', '#38281a', '#6b4d2e'],
+      r: [3, 7.5], grow: [-0.5, 0.5], life: [0.6, 1.2], land: true,
+      vx: [-110, -20], vy: [-150, -60], g: 340, drag: 0.14, alpha: 1, backDrift: 0.6
+    },
+    electric: {
+      shape: 'chunk', colors: ['#aef3ff', '#6ee7ff', '#ffffff', '#8ff5c9'],
+      r: [1.4, 2.8], grow: [0, 0], life: [0.35, 0.7], land: false,
+      vx: [-60, 60], vy: [-70, 10], g: 40, drag: 0.5, alpha: 1, backDrift: 0
+    },
+    star: {
+      shape: 'flake', colors: ['#ffd21e', '#fff3b0', '#ffffff'],
+      r: [3, 6], grow: [0, 0], life: [0.6, 1.1], land: false,
+      vx: [-100, 100], vy: [-200, -80], g: 260, drag: 0.2, alpha: 1, backDrift: 0
     }
   };
 

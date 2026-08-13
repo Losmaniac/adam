@@ -50,7 +50,14 @@
     sparkle: '<svg viewBox="0 0 24 24"><path d="M12 2l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/><path d="M19 14l.9 2.6L22.5 18l-2.6.9L19 21.5l-.9-2.6L15.5 18l2.6-1z"/><path d="M5 2l.7 2L8 4.7l-2.3.8L5 8l-.7-2.5L2 4.7 4.3 4z"/></svg>',
     wheat: '<svg viewBox="0 0 24 24"><path d="M12 22V9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M12 9c0-3 2-5 4-6 .5 3-1 5.5-4 6zM12 9C12 6 10 4 8 3c-.5 3 1 5.5 4 6z"/><path d="M12 14c0-2.6 2-4.4 4-5.2.4 2.6-1 4.7-4 5.2zM12 14c0-2.6-2-4.4-4-5.2-.4 2.6 1 4.7 4 5.2z"/></svg>',
     pour: '<svg viewBox="0 0 24 24"><ellipse cx="13" cy="8" rx="8" ry="5.5" transform="rotate(-14 13 8)"/><path d="M6 11l-3 4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M2 16c0 2 1 3 1 3M5 17c0 2 1 3 1 3M8 18c0 1.5.8 2.5.8 2.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
-    snow: '<svg viewBox="0 0 24 24"><path d="M12 2v20M3.4 7l17.2 10M20.6 7L3.4 17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M9 4.5L12 7l3-2.5M9 19.5L12 17l3 2.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    snow: '<svg viewBox="0 0 24 24"><path d="M12 2v20M3.4 7l17.2 10M20.6 7L3.4 17" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M9 4.5L12 7l3-2.5M9 19.5L12 17l3 2.5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    mud: '<svg viewBox="0 0 24 24"><circle cx="9" cy="15" r="5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="9" cy="15" r="2"/><path d="M15 9l2-3M18 12l3-1M16 16l3 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    wheelie: '<svg viewBox="0 0 24 24"><circle cx="7" cy="17" r="5" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="7" cy="17" r="1.6"/><path d="M12 14L19 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M14 4h6v6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    door: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="10" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M13 7l7-2v14l-7-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="9" cy="12" r="1"/></svg>',
+    mountain: '<svg viewBox="0 0 24 24"><path d="M2 19l6-10 4 6 3-4 7 8z"/><circle cx="18" cy="6" r="2"/></svg>',
+    trunk: '<svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="9" rx="2" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 11l2-6h12l2 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M9 15h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
+    bolt: '<svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>',
+    roof: '<svg viewBox="0 0 24 24"><path d="M3 15h18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M6 15c0-5 3-9 6-9s6 4 6 9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M13 4l3 2-3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
   };
 
   const PLAY_ICON = '<svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z"/></svg>';
@@ -60,7 +67,10 @@
     obili: 'linear-gradient(180deg,#d5f0ff,#f2dfa0)',
     stavba: 'linear-gradient(180deg,#d7eefb,#e3cfa8)',
     silnice: 'linear-gradient(180deg,#cfe6ff,#ffd9a8)',
-    led: 'linear-gradient(180deg,#c9dcf2,#eef8ff)'
+    led: 'linear-gradient(180deg,#c9dcf2,#eef8ff)',
+    teren: 'linear-gradient(180deg,#cdeaff,#c7ceac)',
+    mesto: 'linear-gradient(180deg,#cfe6fb,#dfe6ec)',
+    park: 'linear-gradient(180deg,#cdeeff,#bfe8b8)'
   };
 
   /* ----------------------------------------------------------------- stav */
@@ -113,7 +123,7 @@
     window.addEventListener('orientationchange', () => setTimeout(onResize, 250));
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) { SOUND.stopEngine(); SOUND.stopAction(); SOUND.stopReverseBeep(); }
-      else if (S.running && S.vehicle) { SOUND.startEngine(S.vehicle.sound); }
+      else if (S.running && S.vehicle && !S.vehicle.sound.silent) { SOUND.startEngine(S.vehicle.sound); }
     });
     document.addEventListener('gesturestart', (e) => e.preventDefault());
     document.addEventListener('contextmenu', (e) => {
@@ -183,7 +193,7 @@
 
     if (particles) particles.clear();
 
-    SOUND.startEngine(v.sound);
+    if (!v.sound.silent) SOUND.startEngine(v.sound);
     SOUND.chime();
     setTimeout(() => SOUND.speak(v.name), 380);
 
@@ -488,10 +498,21 @@
     const moving = Math.abs(S.speed) > 2;
     const travelDir = S.speed > 0 ? 1 : S.speed < 0 ? -1 : 0;
 
-    SOUND.setThrottle(throttle * 0.92);
+    if (v.sound.silent) {
+      /* kolo nemá motor – místo hukotu cvaká volnoběžka podle rychlosti */
+      if (moving && S.sound) {
+        S.acc.pedal = (S.acc.pedal || 0) + Math.abs(S.speed) * dt;
+        const step = 13;
+        while (S.acc.pedal > step) { S.acc.pedal -= step; SOUND.freewheelTick(0.07 + throttle * 0.05); }
+      } else {
+        S.acc.pedal = 0;
+      }
+    } else {
+      SOUND.setThrottle(throttle * 0.92);
+    }
 
-    /* couvací pípák */
-    if (S.dir === -1 && S.sound) SOUND.startReverseBeep(); else SOUND.stopReverseBeep();
+    /* couvací pípák (kolo nemá couvací alarm) */
+    if (S.dir === -1 && S.sound && !v.sound.silent) SOUND.startReverseBeep(); else SOUND.stopReverseBeep();
     el.stage.classList.toggle('is-reverse', S.dir === -1);
 
     /* --- kola a pásy --------------------------------------------------- */
